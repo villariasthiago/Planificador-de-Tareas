@@ -1,0 +1,724 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Planificador Thiago & Valentina</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: la semana se lee como la tabla del Doc. Una fila por dia, columnas Thiago | Valentina, y una franja menta con corazon para lo que hacen juntos. */
+:root{
+  --bg:#FAFAFC; --surface:#FFFFFF; --line:#E9EAF1; --line-strong:#D6D9E6; --today:#F3F5FF;
+  --ink:#191B2A; --muted:#656982; --faint:#9A9DB0;
+  --th:#4C57D6; --th-soft:#EEF0FF; --th-line:#D3D8FA; --th-ink:#2D35A6;
+  --va:#A63FC6; --va-soft:#F9EEFC; --va-line:#EBCEF4; --va-ink:#7C2B97;
+  --jn:#13895F; --jn-soft:#E6F7F0; --jn-line:#BDE8D6; --jn-ink:#0A6446;
+  --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --body:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{background:var(--bg)}
+body{
+  margin:0;color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;
+  padding-block:20px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+h1,h2,h3,p,ul{margin:0;padding:0}
+ul{list-style:none}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+:focus-visible{outline:3px solid var(--th);outline-offset:2px;border-radius:8px}
+
+.who-thiago{--c:var(--th);--c-soft:var(--th-soft);--c-line:var(--th-line);--c-ink:var(--th-ink)}
+.who-valentina{--c:var(--va);--c-soft:var(--va-soft);--c-line:var(--va-line);--c-ink:var(--va-ink)}
+.who-ambos{--c:var(--jn);--c-soft:var(--jn-soft);--c-line:var(--jn-line);--c-ink:var(--jn-ink)}
+
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:20px;min-width:0}
+.head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 16px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.title{font-family:var(--display);font-weight:800;font-size:clamp(21px,3.6vw,30px);line-height:1.1;letter-spacing:-0.02em;text-wrap:balance}
+.title .amp{color:var(--jn)}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.sync{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+.sync i{width:8px;height:8px;border-radius:50%;background:var(--faint);flex:none}
+.sync.shared i{background:var(--jn)}
+.sync.readonly i{background:#C98A12}
+
+.avatars{display:flex;align-items:center;flex:none}
+.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;color:#fff;background:var(--c);border:2px solid var(--bg)}
+.heartdot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--jn-soft);color:var(--jn);border:2px solid var(--bg);margin-inline:-5px;z-index:1}
+
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tab{display:flex;align-items:center;gap:10px;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:9px 12px;transition:border-color .15s,background .15s;min-width:0}
+.tab:hover{border-color:var(--line-strong)}
+.tab .ico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--c-soft);color:var(--c);flex:none}
+.tab .t1{display:block;font-weight:700;font-size:15px;line-height:1.2}
+.tab .t2{display:block;font-size:13px;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--c-soft);border-color:var(--c)}
+.tab[aria-selected="true"] .ico{background:var(--c);color:#fff}
+.tab[aria-selected="true"] .t2{color:var(--c-ink)}
+@media(max-width:620px){.tab .ico{display:none}.tab{padding:8px 10px}.tab .t1{font-size:13px}.tab .t2{font-size:12px}}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:clamp(18px,3vw,28px)}
+.h2{font-family:var(--display);font-weight:700;font-size:clamp(21px,3.2vw,26px);letter-spacing:-0.01em;line-height:1.15}
+.hint{color:var(--muted);font-size:15px}
+
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field>label,.field>.lbl{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.input{width:100%;font-size:18px;padding:13px 16px;background:var(--surface);border:1.5px solid var(--line-strong);border-radius:14px;min-width:0}
+.input::placeholder{color:var(--faint)}
+.input:focus{outline:none;border-color:var(--c,var(--th));box-shadow:0 0 0 4px var(--c-soft,var(--th-soft))}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:560px){.seg{grid-template-columns:1fr}}
+.seg button{padding:12px 14px;border-radius:14px;border:1.5px solid var(--line-strong);font-weight:600;font-size:16px;background:var(--surface);display:flex;align-items:center;justify-content:center;gap:8px}
+.seg button[aria-checked="true"]{background:var(--c-soft);border-color:var(--c);color:var(--c-ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:17px;padding:13px 22px;border-radius:14px;background:var(--c,var(--ink));color:#fff;transition:filter .15s}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1.5px solid var(--line-strong)}
+.btn.ghost:hover{filter:none;border-color:var(--ink)}
+.btn.ghost[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.sm{padding:9px 14px;font-size:15px;border-radius:12px}
+.icon-btn{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:var(--faint);flex:none}
+.icon-btn:hover{background:var(--line);color:var(--ink)}
+
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.range{font-family:var(--display);font-weight:700;font-size:clamp(19px,2.8vw,24px);letter-spacing:-0.01em}
+.navgrp{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.modeseg{display:inline-flex;background:var(--line);border-radius:12px;padding:3px}
+.modeseg button{padding:7px 14px;border-radius:10px;font-weight:600;font-size:15px;color:var(--muted)}
+.modeseg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(25,27,42,.1)}
+.strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.strip button{display:flex;flex-direction:column;align-items:center;padding:7px 0;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-size:13px;color:var(--muted);min-width:0}
+.strip button b{font-family:var(--display);font-size:19px;color:var(--ink);line-height:1.2}
+.strip button[aria-pressed="true"]{border-color:var(--ink)}
+.strip button.hasEv::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--jn);margin-top:2px}
+
+/* ---- Tabla de la semana ---- */
+.week{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:clip}
+.wk-head{display:none}
+.wk-row{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line)}
+.wk-row:first-of-type{border-top:0}
+.wk-row.today{background:var(--today)}
+.wk-row.past .lines,.wk-row.past .wk-j{opacity:.55}
+.wk-day{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:14px 16px 4px}
+.dname{font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:-0.01em;line-height:1.15}
+.ddate{color:var(--muted);font-size:14px}
+.today-pill{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--ink);color:#fff;border-radius:999px;padding:2px 9px}
+.addday{margin-left:auto;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line-strong);display:grid;place-items:center;color:var(--muted);background:var(--surface);flex:none}
+.addday:hover{border-color:var(--ink);color:var(--ink)}
+.wk-j{grid-column:1/-1;margin:6px 12px 0;background:var(--jn-soft);border:1.5px solid var(--jn-line);border-radius:14px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start;color:var(--jn)}
+.wk-j .lines{flex:1;min-width:0}
+.wk-j .ln-text{font-family:var(--display);font-weight:700;font-size:19px;color:var(--ink)}
+.wk-j .ln-time{color:var(--jn-ink)}
+.wk-cell{padding:8px 16px 14px;min-width:0}
+.cell-label{display:block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--c);margin-bottom:6px}
+.none{color:var(--faint)}
+.lines{display:flex;flex-direction:column;gap:7px}
+.ln{display:flex;align-items:flex-start;gap:9px;min-width:0}
+.ck{width:20px;height:20px;border-radius:50%;border:2px solid var(--c);display:grid;place-items:center;color:#fff;flex:none;margin-top:2px;background:#fff}
+.ck[aria-pressed="true"]{background:var(--c)}
+.ln-body{flex:1;min-width:0;font-size:17px;line-height:1.35;overflow-wrap:anywhere}
+.ln-time{font-weight:700;color:var(--c-ink);font-variant-numeric:tabular-nums;margin-right:6px;font-size:15px}
+.ln.done .ln-body{text-decoration:line-through;color:var(--faint)}
+.ln.done .ln-time{color:var(--faint)}
+.ln .x{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--faint);flex:none;margin:-2px -4px 0 0}
+.ln .x:hover{background:var(--line);color:var(--ink)}
+.week.big .ln-body{font-size:19px}
+
+@media(min-width:701px){
+  .wk-head{display:grid;grid-template-columns:132px 1fr 1fr;position:sticky;top:env(safe-area-inset-top,0px);z-index:3;background:var(--surface);border-bottom:1px solid var(--line)}
+  .wk-head>div{padding:11px 16px;font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px}
+  .wk-head .th{background:var(--th-soft);color:var(--th-ink)}
+  .wk-head .va{background:var(--va-soft);color:var(--va-ink)}
+  .wk-head .dc{color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-size:12px}
+  .wk-head .dot{width:9px;height:9px;border-radius:50%;background:currentColor}
+  .wk-row{grid-template-columns:132px 1fr 1fr}
+  .wk-day{grid-column:auto;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:16px;border-right:1px solid var(--line)}
+  .wk-row.has-j .wk-day{grid-row:1 / span 2}
+  .addday{margin-left:0;margin-top:8px}
+  .wk-j{grid-column:2 / 4;margin:12px 14px 0}
+  .wk-cell{padding:14px 16px}
+  .wk-cell.v{border-left:1px solid var(--line)}
+  .cell-label{display:none}
+}
+
+.two{display:grid;grid-template-columns:1fr;gap:22px}
+@media(min-width:820px){.two{grid-template-columns:1fr 1fr}}
+.stack{display:flex;flex-direction:column;gap:14px;min-width:0}
+.check{width:26px;height:26px;border-radius:50%;border:2px solid var(--c);display:grid;place-items:center;color:#fff;flex:none;margin-top:1px;background:#fff}
+.check[aria-pressed="true"]{background:var(--c)}
+.time{display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:700;color:var(--c-ink);background:var(--c-soft);border-radius:999px;padding:2px 10px;font-variant-numeric:tabular-nums}
+.listline{display:flex;align-items:flex-start;gap:12px;padding:12px 6px 12px 0;border-bottom:1px solid var(--line)}
+.listline:last-child{border-bottom:0}
+.listline .txt{flex:1;min-width:0;font-size:18px;overflow-wrap:anywhere}
+.listline.done .txt{text-decoration:line-through;color:var(--faint)}
+.addrow{display:flex;gap:10px}
+.addrow .btn{flex:none}
+.empty{color:var(--faint);font-size:16px;padding:6px 0}
+.bar{height:8px;border-radius:999px;background:var(--line);overflow:hidden}
+.bar>div{height:100%;background:var(--jn);border-radius:999px;transition:width .25s}
+
+.banner{display:flex;align-items:center;gap:16px;background:var(--c-soft);border:1.5px solid var(--c-line);border-radius:24px;padding:clamp(16px,3vw,24px)}
+.banner .ico{width:52px;height:52px;border-radius:16px;background:var(--c);color:#fff;display:grid;place-items:center;flex:none}
+.banner h2{color:var(--c-ink)}
+.dayrow{display:grid;grid-template-columns:104px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);align-items:start}
+.dayrow:last-child{border-bottom:0}
+.dayrow .dn{font-weight:700;font-size:16px;padding-top:4px}
+@media(max-width:480px){.dayrow{grid-template-columns:1fr;gap:6px}}
+.slot{display:flex;align-items:center;gap:8px;padding:4px 0}
+.slot .txt{flex:1;min-width:0;font-size:18px;overflow-wrap:anywhere}
+.formrow{display:grid;gap:14px;grid-template-columns:1fr}
+
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(25,27,42,.42);display:flex;align-items:flex-start;justify-content:center;overflow:auto;
+  padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:max(16px,env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.modal{background:var(--surface);border-radius:24px;width:100%;max-width:560px;margin:auto;padding:clamp(18px,4vw,28px);display:flex;flex-direction:column;gap:18px;box-shadow:0 20px 60px rgba(25,27,42,.25)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.26.4/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+const {useState,useEffect,useRef,useMemo,useCallback}=React;
+
+/* ---------- Iconos (trazos al estilo Lucide) ---------- */
+function Icon({size=20,strokeWidth=2,children}){
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      {children}
+    </svg>
+  );
+}
+const I={
+  Heart:(p)=><Icon {...p}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></Icon>,
+  Plus:(p)=><Icon {...p}><path d="M5 12h14"/><path d="M12 5v14"/></Icon>,
+  X:(p)=><Icon {...p}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></Icon>,
+  Pencil:(p)=><Icon {...p}><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></Icon>,
+  Trash:(p)=><Icon {...p}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></Icon>,
+  Check:(p)=><Icon {...p}><path d="M20 6 9 17l-5-5"/></Icon>,
+  Left:(p)=><Icon {...p}><path d="m15 18-6-6 6-6"/></Icon>,
+  Right:(p)=><Icon {...p}><path d="m9 18 6-6-6-6"/></Icon>,
+  Dumbbell:(p)=><Icon {...p}><path d="M6.5 6.5v11"/><path d="M17.5 6.5v11"/><path d="M3.5 9v6"/><path d="M20.5 9v6"/><path d="M6.5 12h11"/></Icon>,
+  Lock:(p)=><Icon {...p}><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></Icon>,
+  Target:(p)=><Icon {...p}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></Icon>,
+  Bell:(p)=><Icon {...p}><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></Icon>,
+  Clock:(p)=><Icon {...p}><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></Icon>,
+  Users:(p)=><Icon {...p}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></Icon>,
+  Note:(p)=><Icon {...p}><path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h6"/><path d="M8 13h8"/><path d="M8 17h5"/></Icon>,
+};
+
+/* ---------- Fechas ---------- */
+const DAYS=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+const MONTHS=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
+const dow=d=>(d.getDay()+6)%7;
+const mondayOf=d=>addDays(d,-dow(d));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const sortKey=t=>t.time==='Mañana'?'08:00':(t.time||'99:99');
+const byTime=(a,b)=>sortKey(a).localeCompare(sortKey(b));
+const WHO={
+  thiago:{name:'Thiago',initial:'T'},
+  valentina:{name:'Valentina',initial:'V'},
+  ambos:{name:'Juntos',initial:''},
+};
+
+/* ---------- Datos de ejemplo ---------- */
+const SEED={
+  tasks:[
+    {id:'s1',date:'2026-10-26',who:'thiago',time:'Mañana',text:'Hablar con Carmelo',done:false},
+    {id:'s2',date:'2026-10-26',who:'thiago',time:'14:00',text:'Cursar',done:false},
+    {id:'s3',date:'2026-10-26',who:'thiago',time:'16:00',text:'Transcribir texto',done:false},
+    {id:'s4',date:'2026-10-26',who:'thiago',time:'19:00',text:'Mandados',done:false},
+    {id:'s5',date:'2026-10-26',who:'thiago',time:'20:30',text:'Zoom',done:false},
+    {id:'s6',date:'2026-10-26',who:'thiago',time:'21:00',text:'Panchos y Cine',done:false},
+    {id:'s7',date:'2026-10-26',who:'valentina',time:'13:00',text:'Público',done:false},
+    {id:'s8',date:'2026-10-26',who:'valentina',time:'15:00',text:'Estudiar',done:false},
+    {id:'s9',date:'2026-10-26',who:'valentina',time:'18:00',text:'Cursar',done:false},
+    {id:'s10',date:'2026-10-26',who:'ambos',time:'20:00',text:'Nos vemos',done:false},
+    {id:'s11',date:'2026-10-27',who:'ambos',time:'15:00',text:'Estudiamos juntos?',done:false},
+    {id:'s12',date:'2026-10-28',who:'thiago',time:'11:30',text:'Subir video a IG',done:false},
+    {id:'s13',date:'2026-10-28',who:'thiago',time:'18:00',text:'Parcial Política',done:false},
+    {id:'s14',date:'2026-10-28',who:'valentina',time:'',text:'Parcial Obligaciones',done:false},
+    {id:'s15',date:'2026-10-30',who:'ambos',time:'',text:'Medio Aniversario',done:false},
+  ],
+  goals:[
+    {id:'g1',text:'Aprobar el Parcial de Política (miércoles)',done:false},
+    {id:'g2',text:'Aprobar el Parcial de Obligaciones (miércoles)',done:false},
+    {id:'g3',text:'Planear el Medio Aniversario del viernes',done:false},
+  ],
+  reminders:[
+    {id:'r1',text:'Pensar si se arman zoom de juventud'},
+    {id:'r2',text:'Ver qué hacer con contratos'},
+  ],
+  priv:{thiago:{fixed:[],notes:[]},valentina:{fixed:[],notes:[]}},
+};
+
+function normalize(d){
+  const b=d&&typeof d==='object'?d:{};
+  const pv=b.priv||{};
+  const sp=k=>({fixed:(pv[k]&&pv[k].fixed)||[],notes:(pv[k]&&pv[k].notes)||[]});
+  return {tasks:b.tasks||[],goals:b.goals||[],reminders:b.reminders||[],priv:{thiago:sp('thiago'),valentina:sp('valentina')}};
+}
+
+/* ---------- Guardado: compartido (db) si esta disponible, si no local ---------- */
+const STORAGE_KEY='planner-thiago-valentina-v1';
+function loadLocal(){
+  try{const raw=localStorage.getItem(STORAGE_KEY);return raw?normalize(JSON.parse(raw)):null;}catch(e){return null;}
+}
+function saveLocal(d){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(d));}catch(e){}
+}
+
+function usePlannerStore(){
+  const [data,setData]=useState(()=>loadLocal()||normalize(SEED));
+  const [sync,setSync]=useState('local');
+  const dbRef=useRef(null);
+  const latest=useRef(data);
+  const timer=useRef(null);
+  const busy=useRef(false);
+
+  const flush=useCallback(async()=>{
+    if(busy.current){timer.current=setTimeout(flush,400);return;}
+    busy.current=true;
+    saveLocal(latest.current);
+    try{
+      if(dbRef.current){
+        await dbRef.current.doc('planner/state').set({data:latest.current,updated:Date.now()});
+      }
+    }catch(e){
+      if(e&&e.code==='invalid_argument'){setSync('readonly');}
+    }finally{busy.current=false;}
+  },[]);
+
+  const update=useCallback(fn=>{
+    const next=fn(latest.current);
+    latest.current=next;
+    setData(next);
+    clearTimeout(timer.current);
+    timer.current=setTimeout(flush,350);
+  },[flush]);
+
+  useEffect(()=>{
+    let dead=false;let unsub=()=>{};
+    (async()=>{
+      let db=null;
+      try{db=window.claude&&window.claude.use?await window.claude.use('db'):null;}catch(e){db=null;}
+      if(dead||!db)return;
+      dbRef.current=db;
+      setSync('shared');
+      try{
+        unsub=db.doc('planner/state').onSnapshot(snap=>{
+          if(snap.metadata.hasPendingWrites)return;
+          if(snap.exists){
+            const d=snap.data();
+            if(d&&d.data){const n=normalize(d.data);latest.current=n;setData(n);}
+          }
+        },()=>{dbRef.current=null;setSync('local');});
+      }catch(e){dbRef.current=null;setSync('local');}
+    })();
+    return()=>{dead=true;unsub();clearTimeout(timer.current);};
+  },[]);
+
+  return {data,update,sync};
+}
+
+/* ---------- Tabla de la semana ---------- */
+function Lines({tasks,editing,onToggle,onDelete}){
+  return (
+    <ul className="lines">
+      {tasks.map(t=>(
+        <li key={t.id} className={`ln who-${t.who} ${t.done?'done':''}`}>
+          <button className="ck" aria-pressed={t.done} aria-label={t.done?`Marcar pendiente: ${t.text}`:`Marcar hecha: ${t.text}`} onClick={()=>onToggle(t.id)}>
+            {t.done&&<I.Check size={12} strokeWidth={3.5}/>}
+          </button>
+          <span className="ln-body">{t.time&&<b className="ln-time">{t.time}</b>}<span className="ln-text">{t.text}</span></span>
+          {editing&&<button className="x" aria-label={`Eliminar: ${t.text}`} onClick={()=>onDelete(t.id)}><I.Trash size={16}/></button>}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function DayRow({date,tasks,todayIso,editing,onToggle,onDelete,onAdd}){
+  const d=parse(date);
+  const sorted=[...tasks].sort(byTime);
+  const by=w=>sorted.filter(t=>t.who===w);
+  const j=by('ambos'),th=by('thiago'),va=by('valentina');
+  const isToday=date===todayIso;
+  const past=date<todayIso;
+  const label=`${DAYS[dow(d)]} ${d.getDate()} de ${MONTHS[d.getMonth()]}`;
+  return (
+    <section className={`wk-row ${j.length?'has-j':''} ${isToday?'today':''} ${past?'past':''}`} aria-label={label}>
+      <div className="wk-day">
+        <span className="dname">{DAYS[dow(d)]}</span>
+        <span className="ddate">{d.getDate()} de {MONTHS[d.getMonth()]}</span>
+        {isToday&&<span className="today-pill">Hoy</span>}
+        <button className="addday" aria-label={`Agregar tarea el ${label}`} onClick={()=>onAdd(date)}><I.Plus size={15} strokeWidth={2.5}/></button>
+      </div>
+      {j.length>0&&(
+        <div className="wk-j who-ambos">
+          <span style={{paddingTop:3}}><I.Heart size={18}/></span>
+          <Lines tasks={j} editing={editing} onToggle={onToggle} onDelete={onDelete}/>
+        </div>
+      )}
+      <div className="wk-cell t who-thiago">
+        <span className="cell-label">Thiago</span>
+        {th.length?<Lines tasks={th} editing={editing} onToggle={onToggle} onDelete={onDelete}/>:<span className="none">–</span>}
+      </div>
+      <div className="wk-cell v who-valentina">
+        <span className="cell-label">Valentina</span>
+        {va.length?<Lines tasks={va} editing={editing} onToggle={onToggle} onDelete={onDelete}/>:<span className="none">–</span>}
+      </div>
+    </section>
+  );
+}
+
+function WeekTable({dates,byDate,todayIso,editing,onToggle,onDelete,onAdd,big}){
+  return (
+    <div className={`week ${big?'big':''}`}>
+      <div className="wk-head" aria-hidden="true">
+        <div className="dc">Día</div>
+        <div className="th"><span className="dot"/>Thiago</div>
+        <div className="va"><span className="dot"/>Valentina</div>
+      </div>
+      {dates.map(ds=>(
+        <DayRow key={ds} date={ds} tasks={byDate[ds]||[]} todayIso={todayIso} editing={editing} onToggle={onToggle} onDelete={onDelete} onAdd={onAdd}/>
+      ))}
+    </div>
+  );
+}
+
+function AddTaskModal({initialDate,onAdd,onClose}){
+  const [text,setText]=useState('');
+  const [date,setDate]=useState(initialDate);
+  const [time,setTime]=useState('');
+  const [who,setWho]=useState('ambos');
+  useEffect(()=>{
+    const h=e=>{if(e.key==='Escape')onClose();};
+    window.addEventListener('keydown',h);
+    return()=>window.removeEventListener('keydown',h);
+  },[onClose]);
+  const submit=e=>{
+    e.preventDefault();
+    const v=text.trim();
+    if(!v||!date)return;
+    onAdd({id:uid(),text:v,date,time,who,done:false});
+  };
+  const opts=[['thiago','Para Thiago'],['valentina','Para Valentina'],['ambos','Para Ambos / Cita']];
+  return (
+    <div className="overlay" onMouseDown={e=>{if(e.target===e.currentTarget)onClose();}}>
+      <form className={`modal who-${who}`} role="dialog" aria-modal="true" aria-labelledby="m-title" onSubmit={submit}>
+        <div className="modal-head">
+          <h2 className="h2" id="m-title">Agregar tarea</h2>
+          <button type="button" className="icon-btn" aria-label="Cerrar" onClick={onClose}><I.X size={20}/></button>
+        </div>
+        <div className="field">
+          <label htmlFor="f-text">¿Qué hay que hacer?</label>
+          <input id="f-text" className="input" autoFocus value={text} onChange={e=>setText(e.target.value)} placeholder="Ej. Estudiamos juntos?" autoComplete="off"/>
+        </div>
+        <div className="formrow" style={{gridTemplateColumns:'1fr 1fr'}}>
+          <div className="field">
+            <label htmlFor="f-date">Día</label>
+            <input id="f-date" type="date" className="input" value={date} onChange={e=>setDate(e.target.value)}/>
+          </div>
+          <div className="field">
+            <label htmlFor="f-time">Hora</label>
+            <input id="f-time" type="time" className="input" value={time} onChange={e=>setTime(e.target.value)}/>
+          </div>
+        </div>
+        <div className="field">
+          <span className="lbl" id="f-who-lbl">¿De quién es?</span>
+          <div className="seg" role="radiogroup" aria-labelledby="f-who-lbl">
+            {opts.map(([k,l])=>(
+              <button type="button" key={k} role="radio" aria-checked={who===k} className={`who-${k}`} onClick={()=>setWho(k)}>
+                {k==='ambos'&&<I.Heart size={16}/>}{l}
+              </button>
+            ))}
+          </div>
+        </div>
+        <button type="submit" className="btn"><I.Plus size={18} strokeWidth={2.5}/>Agregar</button>
+      </form>
+    </div>
+  );
+}
+
+function AddLine({id,placeholder,onAdd,label}){
+  const [v,setV]=useState('');
+  const submit=e=>{e.preventDefault();const t=v.trim();if(!t)return;onAdd(t);setV('');};
+  return (
+    <form className="addrow" onSubmit={submit}>
+      <input id={id} aria-label={label} className="input" value={v} onChange={e=>setV(e.target.value)} placeholder={placeholder} autoComplete="off"/>
+      <button type="submit" className="btn" aria-label="Agregar"><I.Plus size={20} strokeWidth={2.5}/></button>
+    </form>
+  );
+}
+
+function GoalsAndReminders({data,update}){
+  const done=data.goals.filter(g=>g.done).length;
+  const pct=data.goals.length?Math.round(done/data.goals.length*100):0;
+  return (
+    <div className="two">
+      <section className="card who-ambos stack" aria-labelledby="h-goals">
+        <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <span style={{color:'var(--jn)'}}><I.Target size={26}/></span>
+          <h2 className="h2" id="h-goals">Objetivos de la Semana</h2>
+        </div>
+        <div className="bar" role="progressbar" aria-valuenow={pct} aria-valuemin="0" aria-valuemax="100" aria-label="Objetivos cumplidos"><div style={{width:`${pct}%`}}/></div>
+        <p className="hint">{data.goals.length?`${done} de ${data.goals.length} cumplidos`:'Todavía no hay objetivos'}</p>
+        <ul>
+          {data.goals.map(g=>(
+            <li key={g.id} className={`listline ${g.done?'done':''}`}>
+              <button className="check" aria-pressed={g.done} aria-label={`Marcar objetivo: ${g.text}`}
+                onClick={()=>update(d=>({...d,goals:d.goals.map(x=>x.id===g.id?{...x,done:!x.done}:x)}))}>
+                {g.done&&<I.Check size={15} strokeWidth={3}/>}
+              </button>
+              <span className="txt">{g.text}</span>
+              <button className="icon-btn" aria-label={`Eliminar objetivo: ${g.text}`} onClick={()=>update(d=>({...d,goals:d.goals.filter(x=>x.id!==g.id)}))}><I.Trash size={17}/></button>
+            </li>
+          ))}
+        </ul>
+        <AddLine id="add-goal" label="Nuevo objetivo" placeholder="Nuevo objetivo" onAdd={t=>update(d=>({...d,goals:[...d.goals,{id:uid(),text:t,done:false}]}))}/>
+      </section>
+
+      <section className="card stack" aria-labelledby="h-rem">
+        <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <span style={{color:'var(--va)'}}><I.Bell size={26}/></span>
+          <h2 className="h2" id="h-rem">Recordatorios Importantes</h2>
+        </div>
+        {data.reminders.length===0&&<p className="empty">Sin recordatorios por ahora.</p>}
+        <ul>
+          {data.reminders.map(r=>(
+            <li key={r.id} className="listline">
+              <span style={{color:'var(--va)',paddingTop:3}}><I.Bell size={18}/></span>
+              <span className="txt">{r.text}</span>
+              <button className="icon-btn" aria-label={`Eliminar recordatorio: ${r.text}`} onClick={()=>update(d=>({...d,reminders:d.reminders.filter(x=>x.id!==r.id)}))}><I.Trash size={17}/></button>
+            </li>
+          ))}
+        </ul>
+        <AddLine id="add-rem" label="Nuevo recordatorio" placeholder="Nuevo recordatorio" onAdd={t=>update(d=>({...d,reminders:[...d.reminders,{id:uid(),text:t}]}))}/>
+      </section>
+    </div>
+  );
+}
+
+function SharedView({data,update}){
+  const [anchor,setAnchor]=useState(()=>new Date());
+  const [mode,setMode]=useState('week');
+  const [editing,setEditing]=useState(false);
+  const [modalDate,setModalDate]=useState(null);
+  const todayIso=iso(new Date());
+
+  const toggle=id=>update(d=>({...d,tasks:d.tasks.map(t=>t.id===id?{...t,done:!t.done}:t)}));
+  const remove=id=>update(d=>({...d,tasks:d.tasks.filter(t=>t.id!==id)}));
+  const add=task=>{update(d=>({...d,tasks:[...d.tasks,task]}));setAnchor(parse(task.date));setModalDate(null);};
+
+  const start=mondayOf(anchor);
+  const weekDates=Array.from({length:7},(_,i)=>iso(addDays(start,i)));
+  const byDate=useMemo(()=>{
+    const m={};data.tasks.forEach(t=>{(m[t.date]=m[t.date]||[]).push(t);});return m;
+  },[data.tasks]);
+
+  const a=start,b=addDays(start,6);
+  const range=a.getMonth()===b.getMonth()
+    ?`${a.getDate()} – ${b.getDate()} de ${MONTHS[b.getMonth()]} ${b.getFullYear()}`
+    :`${a.getDate()} de ${MONTHS[a.getMonth()]} – ${b.getDate()} de ${MONTHS[b.getMonth()]} ${b.getFullYear()}`;
+  const step=mode==='week'?7:1;
+  const focusIso=iso(anchor);
+  const closeModal=useCallback(()=>setModalDate(null),[]);
+
+  return (
+    <div className="wrap" style={{gap:18}}>
+      <div className="toolbar">
+        <div>
+          <p className="eyebrow">{mode==='week'?'Nuestra Semana':'Nuestro Día'}</p>
+          <p className="range">{mode==='week'?range:`${DAYS[dow(anchor)]} ${anchor.getDate()} de ${MONTHS[anchor.getMonth()]}`}</p>
+        </div>
+        <div className="navgrp">
+          <button className="btn ghost sm" aria-label={mode==='week'?'Semana anterior':'Día anterior'} onClick={()=>setAnchor(addDays(anchor,-step))}><I.Left size={18}/></button>
+          <button className="btn ghost sm" onClick={()=>setAnchor(new Date())}>Hoy</button>
+          <button className="btn ghost sm" aria-label={mode==='week'?'Semana siguiente':'Día siguiente'} onClick={()=>setAnchor(addDays(anchor,step))}><I.Right size={18}/></button>
+          <div className="modeseg" role="group" aria-label="Tipo de vista">
+            <button aria-pressed={mode==='week'} onClick={()=>setMode('week')}>Semana</button>
+            <button aria-pressed={mode==='day'} onClick={()=>setMode('day')}>Día</button>
+          </div>
+          <button className="btn ghost sm" aria-pressed={editing} onClick={()=>setEditing(!editing)}>
+            <I.Pencil size={16}/>{editing?'Listo':'Editar'}
+          </button>
+          <button className="btn sm" onClick={()=>setModalDate(mode==='day'?focusIso:todayIso)}><I.Plus size={17} strokeWidth={2.5}/>Agregar tarea</button>
+        </div>
+      </div>
+
+      {mode==='day'&&(
+        <div className="strip" role="group" aria-label="Días de la semana">
+          {weekDates.map((ds,i)=>{
+            const d=parse(ds);const has=(byDate[ds]||[]).length>0;
+            return (
+              <button key={ds} className={has?'hasEv':''} aria-pressed={ds===focusIso} onClick={()=>setAnchor(d)}>
+                <span>{DAYS[i].slice(0,3)}</span><b>{d.getDate()}</b>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <WeekTable dates={mode==='week'?weekDates:[focusIso]} byDate={byDate} todayIso={todayIso}
+        editing={editing} onToggle={toggle} onDelete={remove} onAdd={setModalDate} big={mode==='day'}/>
+
+      <GoalsAndReminders data={data} update={update}/>
+
+      {modalDate&&<AddTaskModal key={modalDate} initialDate={modalDate} onAdd={add} onClose={closeModal}/>}
+    </div>
+  );
+}
+
+function PrivateSpace({who,data,update}){
+  const isT=who==='thiago';
+  const space=data.priv[who];
+  const name=WHO[who].name;
+  const fixedTitle=isT?'Horarios fijos de Gym':'Horarios fijos de la semana';
+  const FixedIcon=isT?I.Dumbbell:I.Clock;
+  const [day,setDay]=useState(0);
+  const [time,setTime]=useState('');
+  const [what,setWhat]=useState('');
+
+  const patch=fn=>update(d=>({...d,priv:{...d.priv,[who]:fn(d.priv[who])}}));
+  const addFixed=e=>{
+    e.preventDefault();
+    const t=what.trim();if(!t)return;
+    patch(s=>({...s,fixed:[...s.fixed,{id:uid(),day:Number(day),time,text:t}]}));
+    setWhat('');setTime('');
+  };
+
+  return (
+    <div className={`wrap who-${who}`} style={{gap:22}}>
+      <div className="banner">
+        <span className="ico"><I.Lock size={26}/></span>
+        <div>
+          <h2 className="h2">{isT?'Espacio Privado / Gym':'Espacio Privado'} · {name}</h2>
+          <p className="hint" style={{color:'var(--c-ink)',opacity:.8}}>Lo que anotes acá no aparece en Nuestra Semana, así la vista de a dos queda liviana.</p>
+        </div>
+      </div>
+
+      <div className="two">
+        <section className="card stack" aria-labelledby={`h-fixed-${who}`}>
+          <div style={{display:'flex',alignItems:'center',gap:12}}>
+            <span style={{color:'var(--c)'}}><FixedIcon size={26}/></span>
+            <h2 className="h2" id={`h-fixed-${who}`}>{fixedTitle}</h2>
+          </div>
+          <form onSubmit={addFixed} className="stack">
+            <div className="formrow" style={{gridTemplateColumns:'1fr 1fr'}}>
+              <div className="field">
+                <label htmlFor={`pf-day-${who}`}>Día</label>
+                <select id={`pf-day-${who}`} className="input" value={day} onChange={e=>setDay(e.target.value)}>
+                  {DAYS.map((d,i)=><option key={d} value={i}>{d}</option>)}
+                </select>
+              </div>
+              <div className="field">
+                <label htmlFor={`pf-time-${who}`}>Hora</label>
+                <input id={`pf-time-${who}`} type="time" className="input" value={time} onChange={e=>setTime(e.target.value)}/>
+              </div>
+            </div>
+            <div className="addrow">
+              <input id={`pf-what-${who}`} aria-label="Actividad" className="input" value={what} onChange={e=>setWhat(e.target.value)} placeholder={isT?'Ej. Pecho y espalda':'Ej. Clase de yoga'} autoComplete="off"/>
+              <button className="btn" type="submit" aria-label="Agregar horario fijo"><I.Plus size={20} strokeWidth={2.5}/></button>
+            </div>
+          </form>
+          <div>
+            {DAYS.map((dn,i)=>{
+              const items=space.fixed.filter(f=>f.day===i).sort((a,b)=>(a.time||'99').localeCompare(b.time||'99'));
+              return (
+                <div className="dayrow" key={dn}>
+                  <span className="dn">{dn}</span>
+                  <div>
+                    {items.length===0&&<span className="empty">Libre</span>}
+                    {items.map(f=>(
+                      <div className="slot" key={f.id}>
+                        {f.time&&<span className="time"><I.Clock size={13}/>{f.time}</span>}
+                        <span className="txt">{f.text}</span>
+                        <button className="icon-btn" aria-label={`Eliminar: ${f.text}`} onClick={()=>patch(s=>({...s,fixed:s.fixed.filter(x=>x.id!==f.id)}))}><I.Trash size={17}/></button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="card stack" aria-labelledby={`h-notes-${who}`}>
+          <div style={{display:'flex',alignItems:'center',gap:12}}>
+            <span style={{color:'var(--c)'}}><I.Note size={26}/></span>
+            <h2 className="h2" id={`h-notes-${who}`}>{isT?'Notas, rutinas y compromisos':'Notas y compromisos'}</h2>
+          </div>
+          <AddLine id={`pn-${who}`} label="Nueva nota" placeholder={isT?'Ej. Pedir turno para el médico':'Ej. Comprar apuntes'} onAdd={t=>patch(s=>({...s,notes:[...s.notes,{id:uid(),text:t,done:false}]}))}/>
+          {space.notes.length===0&&<p className="empty">Todavía no hay notas. Escribí la primera arriba.</p>}
+          <ul>
+            {space.notes.map(n=>(
+              <li key={n.id} className={`listline ${n.done?'done':''}`}>
+                <button className="check" aria-pressed={n.done} aria-label={`Marcar nota: ${n.text}`}
+                  onClick={()=>patch(s=>({...s,notes:s.notes.map(x=>x.id===n.id?{...x,done:!x.done}:x)}))}>
+                  {n.done&&<I.Check size={15} strokeWidth={3}/>}
+                </button>
+                <span className="txt">{n.text}</span>
+                <button className="icon-btn" aria-label={`Eliminar nota: ${n.text}`} onClick={()=>patch(s=>({...s,notes:s.notes.filter(x=>x.id!==n.id)}))}><I.Trash size={17}/></button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function App(){
+  const {data,update,sync}=usePlannerStore();
+  const [tab,setTab]=useState('shared');
+  const tabs=[
+    {k:'shared',cls:'who-ambos',t1:'Vista Compartida',t2:'Nuestra Semana',ico:<I.Users size={20}/>},
+    {k:'thiago',cls:'who-thiago',t1:'Espacio Privado / Gym',t2:'Thiago',ico:<I.Dumbbell size={20}/>},
+    {k:'valentina',cls:'who-valentina',t1:'Espacio Privado',t2:'Valentina',ico:<I.Lock size={20}/>},
+  ];
+  const syncText={shared:'Compartido entre los dos',local:'Solo en este dispositivo',readonly:'Solo lectura: no se guarda'}[sync];
+  return (
+    <div className="wrap" style={{gap:18}}>
+      <header className="head">
+        <div className="brand">
+          <div className="avatars" aria-hidden="true">
+            <span className="avatar who-thiago">T</span>
+            <span className="heartdot"><I.Heart size={13}/></span>
+            <span className="avatar who-valentina">V</span>
+          </div>
+          <h1 className="title">Planificador Semanal <span className="amp">-</span> Thiago &amp; Valentina</h1>
+        </div>
+        <span className={`sync ${sync}`} role="status"><i/>{syncText}</span>
+      </header>
+
+      <nav className="tabs" role="tablist" aria-label="Vistas del planificador">
+        {tabs.map(t=>(
+          <button key={t.k} role="tab" aria-selected={tab===t.k} className={`tab ${t.cls}`} onClick={()=>setTab(t.k)}>
+            <span className="ico">{t.ico}</span>
+            <span><span className="t1">{t.t1}</span><span className="t2">{t.t2}</span></span>
+          </button>
+        ))}
+      </nav>
+
+      {tab==='shared'&&<SharedView data={data} update={update}/>}
+      {tab==='thiago'&&<PrivateSpace who="thiago" data={data} update={update}/>}
+      {tab==='valentina'&&<PrivateSpace who="valentina" data={data} update={update}/>}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+
+</body></html>
